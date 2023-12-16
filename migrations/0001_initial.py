@@ -61,7 +61,7 @@ class Migration(migrations.Migration):
                         help_text="The department of this position",
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
-                        to="tougshire_staff.department",
+                        to="library_staff.department",
                     ),
                 ),
             ],
@@ -127,7 +127,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         help_text="The position filled by the staff member",
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="tougshire_staff.position",
+                        to="library_staff.position",
                     ),
                 ),
                 (
@@ -135,7 +135,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         help_text="The staff member assicated with the position",
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="tougshire_staff.member",
+                        to="library_staff.member",
                     ),
                 ),
             ],
