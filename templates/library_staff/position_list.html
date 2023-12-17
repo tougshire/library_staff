@@ -1,0 +1,71 @@
+{% extends './_base.html' %}
+{% load static %}
+{% block content %}
+
+{% include 'tougshire_vistas/filter.html' %}
+
+<div class="list">
+{% comment %}<div><a href="{% url 'libtekin:position-create' %}">create</a></div> {% endcomment %}
+{% comment %}<div><a href="{% url 'libtekin:position-csv' %}">export</a></div> {% endcomment %}
+      <div class="row rowhead">
+        {% comment %}        {% include 'touglates/list_head.html' with field='' %} {% endcomment %}
+        {% if 'title' in show_columns or not show_columns %}
+          {% include 'touglates/list_head.html' with field=labels.title %}
+        {% endif %}
+        {% if 'department' in show_columns or not show_columns %}
+          {% include 'touglates/list_head.html' with field=labels.department %}
+        {% endif %}
+      </div>
+
+      {% for position in object_list %}
+        <div class="row">
+{% comment %}          <div class="listfield"><a href="{% url 'libtekin:position-detail' position.pk %}">view</a></div> {% endcomment %}
+{% comment %}          <div class="listfield"><a href="{% url 'libtekin:position-update' position.pk %}">edit</a></div> {% endcomment %}
+          {% if 'title' in show_columns or not show_columns %}
+            {% include 'touglates/list_field.html' with field=position.title %}
+          {% endif %}
+          {% if 'department' in show_columns or not show_columns %}
+            {% include 'touglates/list_field.html' with field=position.department %}
+          {% endif %}
+        </div>
+      {% endfor %}
+      <div>Count: {{ count }}</div>
+
+    </div>
+  </div>
+  <div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a id="a_first" href="?page=1">&laquo; first</a>
+            <a id="a_previous" href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a id="a_next" href="?page={{ page_obj.next_page_number }}">next</a>
+            <a id="a_last" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+  </div>
+
+{% endblock %}
+{% block bottomscript %}
+  {{ block.super }}
+
+  <script>
+
+    for( paginator of ['a_first', 'a_previous', 'a_next', 'a_last']) {
+      if(!(document.getElementById(paginator)==null) ) {
+        document.getElementById(paginator).addEventListener('click', function(e) {
+          e.preventDefault()
+          document.getElementById('frm_vista').action = e.target.href
+          document.getElementById('frm_vista').submit()
+        });
+      }
+    }
+  </script>
+
+{% endblock %}
