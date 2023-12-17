@@ -1,7 +1,6 @@
 from typing import Any
 from django.contrib import admin
 from django.http.request import HttpRequest
-from import_export import resources
 from .models import Department, Position, Member, StaffPosition
 
 
