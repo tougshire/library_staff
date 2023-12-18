@@ -176,6 +176,7 @@ class Assignable(models.Model):
             "type",
             "name",
         ]
+        verbose_name = "assignable item"
 
     def __str__(self):
         return self.name

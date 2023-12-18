@@ -12,6 +12,12 @@ from .models import (
 )
 
 
+class AssignableToInline(admin.StackedInline):
+    model = AssignableTo
+    fk_name = "position"
+    extra = 1
+
+
 class StaffPositionInline(admin.StackedInline):
     model = StaffPosition
     extra = 1
@@ -35,7 +41,7 @@ class DepartmentAdmin(admin.ModelAdmin):
 
 class PositionAdmin(admin.ModelAdmin):
     list_display = ["__str__", "get_member", "level"]
-    inlines = [StaffPositionInline]
+    inlines = [StaffPositionInline, AssignableToInline]
 
     @admin.display(
         description="member",
@@ -52,7 +58,7 @@ class PositionAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
         # for all positions witha greater level (which actually represents a lower position):
         for position in Position.objects.filter(level__gt=obj.level):
-            # if my position is in the called position's chain of command: 
+            # if my position is in the called position's chain of command:
             if position.in_chain(obj):
                 # save() calls set_level() which adjusts the position's place chain of command level
                 position.save()
