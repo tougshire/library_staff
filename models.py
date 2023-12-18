@@ -29,15 +29,73 @@ class Position(models.Model):
         null=True,
         help_text="The department of this position",
     )
+    reports_to = models.ForeignKey(
+        "position",
+        verbose_name="reports to",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="reporter",
+        help_text="The position that this position reports to",
+    )
+    level = models.IntegerField(
+        "level",
+        default=0,
+        help_text="An automatically generated number to help with ordering",
+    )
+
+    chain = []
 
     class Meta:
         ordering = [
+            "level",
             "department",
             "title",
         ]
 
+    class CircularChainDetected(Exception):
+        """A circle in the chain of command has been detected"""
+
     def __str__(self):
         return self.title
+
+    def save(
+        self,
+        force_insert=False,
+        force_update=False,
+        using=None,
+        update_fields=None,
+    ):
+        self.set_chain()
+        self.set_level()
+
+        return super().save(force_insert, force_update, using, update_fields)
+
+    def set_chain(self):
+        self.chain = []
+        reports_to = self.reports_to
+        while reports_to is not None:
+            if reports_to == self or reports_to in self.chain:
+                if reports_to == self:
+                    raise (
+                        self.CircularChainDetected(f"Self detected in chain of command")
+                    )
+                else:
+                    raise (
+                        self.CircularChainDetected(
+                            f"{ reports_to } detected more than once in chain of command"
+                        )
+                    )
+                break
+            self.chain.append(reports_to)
+            reports_to = reports_to.reports_to
+
+    def set_level(self):
+        self.level = len(self.chain)
+
+    def in_chain(self, position_to_check):
+        self.set_chain
+        return position_to_check in self.chain
 
 
 class Member(models.Model):
@@ -124,4 +182,22 @@ class Assignable(models.Model):
 
 
 class AssignableTo(models.Model):
-    Position = models.ForeignKey(Member, on_delete=models.CASCADE, help_text="The ")
+    position = models.ForeignKey(
+        Position,
+        on_delete=models.CASCADE,
+        related_name="assignable_item",
+        help_text="The position to receive the item",
+    )
+    assignable = models.ForeignKey(
+        Assignable,
+        on_delete=models.CASCADE,
+        help_text="The assignable item assignable to the position",
+    )
+    Responsible = models.ForeignKey(
+        Position,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="responsibility",
+        help_text="The position responsible to ensure the person has received the assignable item",
+    )
