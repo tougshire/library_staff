@@ -172,11 +172,12 @@ class Assignable(models.Model):
     )
 
     class Meta:
+        verbose_name = "assignable item"
+
         ordering = [
             "type",
             "name",
         ]
-        verbose_name = "assignable item"
 
     def __str__(self):
         return self.name

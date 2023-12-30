@@ -59,7 +59,11 @@ class PositionList(PermissionRequiredMixin, ListView):
     def get_queryset(self, **kwargs):
         queryset = super().get_queryset()
 
-        self.vistaobj = {"querydict": QueryDict(), "queryset": queryset}
+        self.vistaobj = {
+            "querydict": QueryDict(),
+            "queryset": queryset,
+            "model_name": "Position",
+        }
 
         return get_vista_queryset(self)
 
